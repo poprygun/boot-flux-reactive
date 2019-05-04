@@ -14,9 +14,9 @@ public class ReactiveConfig {
     @Bean
     RouterFunction<?> routerFunction(RouterHandlers routerHandlers) {
 
-        return RouterFunctions.route(RequestPredicates.GET("/rest/employee/all"), routerHandlers::getAll)
-                .andRoute(RequestPredicates.GET("/rest/employee/{id}"), routerHandlers::getId)
-                .andRoute(RequestPredicates.GET("/rest/employee/{id}/events"), routerHandlers::getEvents)
+        return RouterFunctions.route(RequestPredicates.GET("/rest/track/all"), routerHandlers::getAll)
+                .andRoute(RequestPredicates.GET("/rest/track/{id}"), routerHandlers::getId)
+                .andRoute(RequestPredicates.GET("/rest/track/{id}/events"), routerHandlers::getEvents)
                 ;
 
     }

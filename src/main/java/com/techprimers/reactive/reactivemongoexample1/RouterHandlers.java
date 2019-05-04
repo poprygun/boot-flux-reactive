@@ -1,8 +1,8 @@
 package com.techprimers.reactive.reactivemongoexample1;
 
-import com.techprimers.reactive.reactivemongoexample1.model.Employee;
-import com.techprimers.reactive.reactivemongoexample1.model.EmployeeEvent;
-import com.techprimers.reactive.reactivemongoexample1.repository.EmployeeRepository;
+import com.techprimers.reactive.reactivemongoexample1.model.Track;
+import com.techprimers.reactive.reactivemongoexample1.model.TrackEvent;
+import com.techprimers.reactive.reactivemongoexample1.repository.TrackRepository;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -18,18 +18,16 @@ import java.util.stream.Stream;
 @Component
 public class RouterHandlers {
 
-    private EmployeeRepository employeeRepository;
+    private TrackRepository trackRepository;
 
-    public RouterHandlers(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
+    public RouterHandlers(TrackRepository trackRepository) {
+        this.trackRepository = trackRepository;
     }
 
     public Mono<ServerResponse> getAll(ServerRequest serverRequest) {
         return ServerResponse
                 .ok()
-                .body(
-                        employeeRepository.findAll(), Employee.class
-                );
+                .body(trackRepository.findAll(), Track.class);
     }
 
     public Mono<ServerResponse> getId(ServerRequest serverRequest) {
@@ -37,28 +35,26 @@ public class RouterHandlers {
         String empId = serverRequest.pathVariable("id");
         return ServerResponse
                 .ok()
-                .body(
-                        employeeRepository.findById(empId), Employee.class
-                );
+                .body(trackRepository.findById(empId), Track.class);
     }
 
     public Mono<ServerResponse> getEvents(ServerRequest serverRequest) {
-        String empId = serverRequest.pathVariable("id");
+        String trackId = serverRequest.pathVariable("id");
         return ServerResponse
                 .ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(
-                        employeeRepository.findById(empId)
-                                .flatMapMany(employee -> {
+                        trackRepository.findById(trackId)
+                                .flatMapMany(track -> {
                                     Flux<Long> interval = Flux.interval(Duration.ofSeconds(2));
-                                    Flux<EmployeeEvent> employeeEventFlux =
+                                    Flux<TrackEvent> trackEventFlux =
                                             Flux.fromStream(
-                                                    Stream.generate(() -> new EmployeeEvent(employee,
+                                                    Stream.generate(() -> new TrackEvent(track,
                                                             new Date()))
                                             );
-                                    return Flux.zip(interval, employeeEventFlux)
+                                    return Flux.zip(interval, trackEventFlux)
                                             .map(Tuple2::getT2);
-                                }), EmployeeEvent.class
+                                }), TrackEvent.class
                 );
     }
 }
